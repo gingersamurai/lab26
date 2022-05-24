@@ -9,12 +9,15 @@ struct _node{
 };
 
 // печатаем очередь
-node *print_queue(node *back, node *front);
+void print_queue(node *back, node *front);
 
 // создаем вершину
 node *create_node(int val);
 
 // добавляем вершину в конец очереди
-void push_back(node *now, node *back, node *front);
+void push_back(node *now, node **back, node **front);
+
+// удаляем вершину из начала очереди
+void pop_back(node **back, node **front);
 
 #endif
