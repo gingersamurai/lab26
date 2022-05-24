@@ -47,4 +47,33 @@ void pop_back(node **back, node **front){
     free(ext);
 }
 
+void swap(node *a, node *b){
+    int add = a->value;
+    a->value = b->value;
+    b->value = add;
+}
+
+void task (node *back, node *front){
+    node *now = front;
+    while (1) {
+        if (now == NULL || now == back) {
+            return;
+        } else if (now->value < now->next->value) {
+            break;
+        }
+        now = now->next;
+    }
+
+    while(1) {
+        if (now == NULL || now == back) {
+            return;
+        } else if (now->value < now->next->value) {
+            swap(now, now->next);
+            now = now->next;
+        } else {
+            return;
+        }
+    }
+}
+
 

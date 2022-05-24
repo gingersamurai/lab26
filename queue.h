@@ -20,4 +20,7 @@ void push_back(node *now, node **back, node **front);
 // удаляем вершину из начала очереди
 void pop_back(node **back, node **front);
 
+// выполняет 6 задание
+void task(node *back, node *front);
+
 #endif

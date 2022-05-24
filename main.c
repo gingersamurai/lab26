@@ -30,7 +30,7 @@ int main(){
         } else if (q == 2){
             pop_back(&back, &front);
         } else if (q == 3){
-            // 
+            task(back, front);
         } else if (q == 4){
             print_queue(back, front);
         }
