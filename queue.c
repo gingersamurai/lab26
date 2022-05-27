@@ -53,6 +53,8 @@ int subtask(udt *q){
                     q->arr[i] = q->arr[i-1];
                     q->arr[i-1] = aa;
                     i--;
+                } else {
+                    break;
                 }
             }
             return 1;
