@@ -45,7 +45,7 @@ int main(){
         } else if (query == 6){
             printf("(%d:%d)\n", udt_front(q).key, udt_front(q).value);
         } else if (query == 7){
-
+            task(q);
         } else if (query == 8){
             return 0;
         } else {

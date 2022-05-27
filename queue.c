@@ -42,3 +42,25 @@ int udt_size(const udt *q){
 item udt_front(udt *q){
     return q->arr[q->front_id];
 }
+
+int subtask(udt *q){
+    for (int i = q->front_id + 1; i <= q->back_id; i++) {
+        if (q->arr[i].value < q->arr[i-1].value) {
+            while(i > q->front_id) {
+                printf("%d -> %d\n", q->arr[i].value, q->arr[i-1].value);
+                if (q->arr[i].value < q->arr[i-1].value) {
+                    item aa = q->arr[i];
+                    q->arr[i] = q->arr[i-1];
+                    q->arr[i-1] = aa;
+                    i--;
+                }
+            }
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void task(udt *q){
+    while(subtask(q) == 1);
+}

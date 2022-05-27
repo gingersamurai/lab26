@@ -36,4 +36,10 @@ int udt_size(const udt *q);
 // вернуть первый элемент очереди
 item udt_front(udt *q);
 
+// поиск в очереди первого несорт элем и сорт
+int subtask(udt *q);
+
+// сортировка вставкой
+void task(udt *q);
+
 #endif
