@@ -53,37 +53,55 @@
 #include "queue.h"
 
 void print_menu(){
-    printf("┌─────────────────────────────────────┐\n");
-    printf("│1.добавить Х в конец очереди вершину │\n");
-    printf("│2.удалить из конца очереди вершину   │\n");
-    printf("│3.выполнить задание                  │\n");
-    printf("│4.напечатать очередь                 │\n");
-    printf("│5.завершить работу программы         │\n");
-    printf("└─────────────────────────────────────┘\n");
-    printf("введите запрос: ");
+    printf("-------------------------\n");
+    printf("1 check if is empty\n");
+    printf("2 push back elem\n");
+    printf("3 pop front elem\n");
+    printf("4 print queue\n");
+    printf("5 queue size\n");
+    printf("6 queue front\n");
+    printf("7 my task - sort\n");
+    printf("8 exit\n");
+    printf("-------------------------\n");
 }
 
 int main(){
-    node *front = NULL;
-    node *back = NULL;
-    int q = 0;
-    while (q != 5){
+    udt *q = (udt *) malloc(sizeof(udt));
+
+    udt_create(q);
+    int query = 0;
+    while (query != 8) {
         print_menu();
-        scanf("%d", &q);
-        if (q == 1){
-            printf("введите Х:");
-            int x;
-            scanf("%d", &x);
-            node *new_node = create_node(x);
-            push_back(new_node, &back, &front);
-        } else if (q == 2){
-            pop_back(&back, &front);
-        } else if (q == 3){
-            task(back, front);
-        } else if (q == 4){
-            print_queue(back, front);
+        scanf("%d", &query);
+        if (query == 1) {
+            bool res = udt_is_empty(q);
+            if (res == true) {
+                printf("empty\n");
+            } else {
+                printf("not empty\n");
+            }
+        } else if (query == 2) {
+            printf("enter key and value: ");
+            item x;
+            scanf("%d %d", &x.key, &x.value);
+            udt_push_back(q, x);
+        } else if (query == 3) {
+            udt_pop_front(q);
+        } else if (query == 4) {
+            udt_print(q);
+        } else if (query == 5) {
+            printf("%d\n", udt_size(q));
+        } else if (query == 6){
+            printf("(%d:%d)\n", udt_front(q).key, udt_front(q).value);
+        } else if (query == 7){
+            task(q);
+        } else if (query == 8){
+            return 0;
+        } else {
+            printf("ERROR\n");
         }
     }
+ 
 }
 ```
 
@@ -92,27 +110,46 @@ int main(){
 #ifndef QUEUE_H
 #define QUEUE_H
 
-typedef struct _node node;
+#include <stdbool.h>
 
-struct _node{
+
+typedef struct {
+    int key;
     int value;
-    node *next;
-};
+} item;
 
-// печатаем очередь
-void print_queue(node *back, node *front);
+typedef struct {
+    int front_id;
+    int back_id;
+    item arr[100000];
+} udt;
 
-// создаем вершину
-node *create_node(int val);
+// создать очередь
+void udt_create(udt *q);
 
-// добавляем вершину в конец очереди
-void push_back(node *now, node **back, node **front);
+// проверить на пустоту
+bool udt_is_empty(const udt *q);
 
-// удаляем вершину из начала очереди
-void pop_back(node **back, node **front);
+// добавить элемент в конец очереди
+void udt_push_back(udt *q, item new_elem);
 
-// выполняет 6 задание
-void task(node *back, node *front);
+// удалить первый элемент из очереди
+void udt_pop_front(udt *q);
+
+// напечатать очередь
+void udt_print(udt *q);
+
+// вернуть размер очереди
+int udt_size(const udt *q);
+
+// вернуть первый элемент очереди
+item udt_front(udt *q);
+
+// поиск в очереди первого несорт элем и сорт
+int subtask(udt *q);
+
+// сортировка вставкой
+void task(udt *q);
 
 #endif
 ```
@@ -122,80 +159,71 @@ void task(node *back, node *front);
 ```c
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "queue.h"
 
-void print_queue(node *back, node *front){
-    node *now = front;
+void udt_create(udt* q){
+    q->front_id = 1;
+    q->back_id = 0;
+}
+
+bool udt_is_empty(const udt* q){
+    if (q->front_id > q->back_id) return true;
+    else return false;
+}
+
+void udt_push_back(udt* q, item new_elem){
+    if (udt_is_empty(q)) {
+        q->front_id = q->back_id;
+        q->arr[q->back_id] = new_elem;
+    } else {
+        q->back_id++;
+        q->arr[q->back_id] = new_elem;
+    }
+}
+
+void udt_pop_front(udt *q){
+    if (udt_is_empty(q)) return;
+    q->front_id++;
+}
+
+void udt_print(udt *q){
     printf("[ ");
-    while(now != back) {
-
-        printf("%d ", now->value);
-        now = now->next;
+    for (int i = q->front_id; i <= q->back_id; i++){
+        printf("(%d:%d) ", q->arr[i].key,q->arr[i].value);
     }
-    if (now != NULL) printf("%d ", now->value);
-    printf("]\n");
+    printf(" ]\n");
 }
 
-node *create_node(int _value){
-    node *resnode = (node *) malloc(sizeof(node));
-    resnode->value = _value;
-    resnode->next = NULL;
-    return resnode;
+int udt_size(const udt *q){
+    return q->back_id - q->front_id + 1;    
 }
 
-void push_back(node *now, node **back, node **front){
-    if (now == NULL) printf("SUPERBAD\n");
-    if (*front == NULL && *back == NULL) {
-        printf("EMPTY\n");
-        *front = now;
-        *back = now;
-    } else {
-        (*back)->next = now;
-        *back = now;
-    }
+item udt_front(udt *q){
+    return q->arr[q->front_id];
 }
 
-void pop_back(node **back, node **front){
-    node *ext = *front;
-    
-    if (*back == *front) {
-        *back = NULL;
-        *front = NULL; 
-    } else {
-        printf("%d -> %d\n", (*front)->value, (*front)->next->value);
-        *front = (*front)->next;
-    }
-    free(ext);
-}
-
-void swap(node *a, node *b){
-    int add = a->value;
-    a->value = b->value;
-    b->value = add;
-}
-
-void task (node *back, node *front){
-    node *now = front;
-    while (1) {
-        if (now == NULL || now == back) {
-            return;
-        } else if (now->value < now->next->value) {
-            break;
-        }
-        now = now->next;
-    }
-
-    while(1) {
-        if (now == NULL || now == back) {
-            return;
-        } else if (now->value < now->next->value) {
-            swap(now, now->next);
-            now = now->next;
-        } else {
-            return;
+int subtask(udt *q){
+    for (int i = q->front_id + 1; i <= q->back_id; i++) {
+        if (q->arr[i].value < q->arr[i-1].value) {
+            while(i > q->front_id) {
+                printf("%d -> %d\n", q->arr[i].value, q->arr[i-1].value);
+                if (q->arr[i].value < q->arr[i-1].value) {
+                    item aa = q->arr[i];
+                    q->arr[i] = q->arr[i-1];
+                    q->arr[i-1] = aa;
+                    i--;
+                } else {
+                    break;
+                }
+            }
+            return 1;
         }
     }
+    return 0;
+}
+
+void task(udt *q){
+    while(subtask(q) == 1);
 }
 ```
 
@@ -220,272 +248,317 @@ clean:
 ### пример работы
 ```
 gingersamurai@LY530:~/coding/lab/lab25-26$ make 
+gcc -c queue.c -o queue.o
+gcc queue.o main.o -o main
 ./main
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 1
-введите Х:1
-EMPTY
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 1
-введите Х:3
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 1
-введите Х:5
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 1
-введите Х:2
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 1
-введите Х:4
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 4
-[ 1 3 5 2 4 ]
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 2
-1 -> 3
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 4
-[ 3 5 2 4 ]
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 2
-3 -> 5
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 4
-[ 5 2 4 ]
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 2
-5 -> 2
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 4
-[ 2 4 ]
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 2
-2 -> 4
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 4
-[ 4 ]
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 2
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 4
-[ ]
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 1
-введите Х:1
-EMPTY
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 1
-введите Х:2
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 1
-введите Х:3
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 1
-введите Х:4
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 4
-[ 1 2 3 4 ]
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 3
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 4
-[ 2 3 4 1 ]
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 3
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 4
-[ 3 4 2 1 ]
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 3
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 4
-[ 4 3 2 1 ]
-┌─────────────────────────────────────┐
-│1.добавить Х в конец очереди вершину │
-│2.удалить из конца очереди вершину   │
-│3.выполнить задание                  │
-│4.напечатать очередь                 │
-│5.завершить работу программы         │
-└─────────────────────────────────────┘
-введите запрос: 5
-gingersamurai@LY530:~/coding/lab/lab25-26$ git commit -m 'made task'
-[master eafda0c] made task
- 6 files changed, 33 insertions(+), 1 deletion(-)
- rewrite main.o (94%)
- rewrite queue.o (84%)
-gingersamurai@LY530:~/coding/lab/lab25-26$ git push
-Перечисление объектов: 15, готово.
-Подсчет объектов: 100% (15/15), готово.
-При сжатии изменений используется до 8 потоков
-Сжатие объектов: 100% (8/8), готово.
-Запись объектов: 100% (8/8), 2.54 КиБ | 2.54 МиБ/с, готово.
-Всего 8 (изменения 6), повторно использовано 0 (изменения 0)
-remote: Resolving deltas: 100% (6/6), completed with 6 local objects.
-To https://github.com/gingersamurai/lab26.git
-   8da3b19..eafda0c  master -> master
-gingersamurai@LY530:~/coding/lab/lab25-26$ 
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+2
+enter key and value: 1 43
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+2
+enter key and value: 4 12
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+4
+[ (1:43) (4:12)  ]
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+5
+2
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+1
+not empty
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+4
+[ (1:43) (4:12)  ]
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+2
+enter key and value: 4 5467
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+2
+enter key and value: 65 1
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+2
+enter key and value: 654
+9
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+4
+[ (1:43) (4:12) (4:5467) (65:1) (654:9)  ]
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+3
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+4
+[ (4:12) (4:5467) (65:1) (654:9)  ]
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+3
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+4
+[ (4:5467) (65:1) (654:9)  ]
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+2
+enter key and value: 4 2
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+2
+enter key and value: -1
+4
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+4
+[ (4:5467) (65:1) (654:9) (4:2) (-1:4)  ]
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+7
+1 -> 5467
+9 -> 5467
+9 -> 1
+2 -> 5467
+2 -> 9
+2 -> 1
+4 -> 5467
+4 -> 9
+4 -> 2
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+4
+[ (65:1) (4:2) (-1:4) (654:9) (4:5467)  ]
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+2
+enter key and value: 6 8
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+4
+[ (65:1) (4:2) (-1:4) (654:9) (4:5467) (6:8)  ]
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+5
+6
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+7
+8 -> 5467
+8 -> 9
+8 -> 4
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+4
+[ (65:1) (4:2) (-1:4) (6:8) (654:9) (4:5467)  ]
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
 
 
 ```
