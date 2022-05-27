@@ -1,26 +1,39 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-typedef struct _node node;
+#include <stdbool.h>
 
-struct _node{
+
+typedef struct {
+    int key;
     int value;
-    node *next;
-};
+} item;
 
-// печатаем очередь
-void print_queue(node *back, node *front);
+typedef struct {
+    int front_id;
+    int back_id;
+    item arr[100000];
+} udt;
 
-// создаем вершину
-node *create_node(int val);
+// создать очередь
+void udt_create(udt *q);
 
-// добавляем вершину в конец очереди
-void push_back(node *now, node **back, node **front);
+// проверить на пустоту
+bool udt_is_empty(const udt *q);
 
-// удаляем вершину из начала очереди
-void pop_back(node **back, node **front);
+// добавить элемент в конец очереди
+void udt_push_back(udt *q, item new_elem);
 
-// выполняет 6 задание
-void task(node *back, node *front);
+// удалить первый элемент из очереди
+void udt_pop_front(udt *q);
+
+// напечатать очередь
+void udt_print(udt *q);
+
+// вернуть размер очереди
+int udt_size(const udt *q);
+
+// вернуть первый элемент очереди
+item udt_front(udt *q);
 
 #endif

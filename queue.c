@@ -1,79 +1,44 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "queue.h"
 
-void print_queue(node *back, node *front){
-    node *now = front;
+void udt_create(udt* q){
+    q->front_id = 1;
+    q->back_id = 0;
+}
+
+bool udt_is_empty(const udt* q){
+    if (q->front_id > q->back_id) return true;
+    else return false;
+}
+
+void udt_push_back(udt* q, item new_elem){
+    if (udt_is_empty(q)) {
+        q->front_id = q->back_id;
+        q->arr[q->back_id] = new_elem;
+    } else {
+        q->back_id++;
+        q->arr[q->back_id] = new_elem;
+    }
+}
+
+void udt_pop_front(udt *q){
+    if (udt_is_empty(q)) return;
+    q->front_id++;
+}
+
+void udt_print(udt *q){
     printf("[ ");
-    while(now != back) {
-
-        printf("%d ", now->value);
-        now = now->next;
+    for (int i = q->front_id; i <= q->back_id; i++){
+        printf("(%d:%d) ", q->arr[i].key,q->arr[i].value);
     }
-    if (now != NULL) printf("%d ", now->value);
-    printf("]\n");
+    printf(" ]\n");
 }
 
-node *create_node(int _value){
-    node *resnode = (node *) malloc(sizeof(node));
-    resnode->value = _value;
-    resnode->next = NULL;
-    return resnode;
+int udt_size(const udt *q){
+    return q->back_id - q->front_id + 1;    
 }
 
-void push_back(node *now, node **back, node **front){
-    if (now == NULL) printf("SUPERBAD\n");
-    if (*front == NULL && *back == NULL) {
-        printf("EMPTY\n");
-        *front = now;
-        *back = now;
-    } else {
-        (*back)->next = now;
-        *back = now;
-    }
+item udt_front(udt *q){
+    return q->arr[q->front_id];
 }
-
-void pop_back(node **back, node **front){
-    node *ext = *front;
-    
-    if (*back == *front) {
-        *back = NULL;
-        *front = NULL; 
-    } else {
-        printf("%d -> %d\n", (*front)->value, (*front)->next->value);
-        *front = (*front)->next;
-    }
-    free(ext);
-}
-
-void swap(node *a, node *b){
-    int add = a->value;
-    a->value = b->value;
-    b->value = add;
-}
-
-void task (node *back, node *front){
-    node *now = front;
-    while (1) {
-        if (now == NULL || now == back) {
-            return;
-        } else if (now->value < now->next->value) {
-            break;
-        }
-        now = now->next;
-    }
-
-    while(1) {
-        if (now == NULL || now == back) {
-            return;
-        } else if (now->value < now->next->value) {
-            swap(now, now->next);
-            now = now->next;
-        } else {
-            return;
-        }
-    }
-}
-
-

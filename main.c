@@ -4,35 +4,53 @@
 #include "queue.h"
 
 void print_menu(){
-    printf("┌─────────────────────────────────────┐\n");
-    printf("│1.добавить Х в конец очереди вершину │\n");
-    printf("│2.удалить из конца очереди вершину   │\n");
-    printf("│3.выполнить задание                  │\n");
-    printf("│4.напечатать очередь                 │\n");
-    printf("│5.завершить работу программы         │\n");
-    printf("└─────────────────────────────────────┘\n");
-    printf("введите запрос: ");
+    printf("-------------------------\n");
+    printf("1 check if is empty\n");
+    printf("2 push back elem\n");
+    printf("3 pop front elem\n");
+    printf("4 print queue\n");
+    printf("5 queue size\n");
+    printf("6 queue front\n");
+    printf("7 my task - sort\n");
+    printf("8 exit\n");
+    printf("-------------------------\n");
 }
 
 int main(){
-    node *front = NULL;
-    node *back = NULL;
-    int q = 0;
-    while (q != 5){
+    udt *q = (udt *) malloc(sizeof(udt));
+
+    udt_create(q);
+    int query = 0;
+    while (query != 8) {
         print_menu();
-        scanf("%d", &q);
-        if (q == 1){
-            printf("введите Х:");
-            int x;
-            scanf("%d", &x);
-            node *new_node = create_node(x);
-            push_back(new_node, &back, &front);
-        } else if (q == 2){
-            pop_back(&back, &front);
-        } else if (q == 3){
-            task(back, front);
-        } else if (q == 4){
-            print_queue(back, front);
+        scanf("%d", &query);
+        if (query == 1) {
+            bool res = udt_is_empty(q);
+            if (res == true) {
+                printf("empty\n");
+            } else {
+                printf("not empty\n");
+            }
+        } else if (query == 2) {
+            printf("enter key and value: ");
+            item x;
+            scanf("%d %d", &x.key, &x.value);
+            udt_push_back(q, x);
+        } else if (query == 3) {
+            udt_pop_front(q);
+        } else if (query == 4) {
+            udt_print(q);
+        } else if (query == 5) {
+            printf("%d\n", udt_size(q));
+        } else if (query == 6){
+            printf("(%d:%d)\n", udt_front(q).key, udt_front(q).value);
+        } else if (query == 7){
+
+        } else if (query == 8){
+            return 0;
+        } else {
+            printf("ERROR\n");
         }
     }
+ 
 }
