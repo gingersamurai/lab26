@@ -14,6 +14,7 @@ void print_menu(){
     printf("7 my task - sort\n");
     printf("8 exit\n");
     printf("-------------------------\n");
+    printf("your query: ");
 }
 
 int main(){
@@ -50,7 +51,7 @@ int main(){
             return 0;
         } else {
             printf("ERROR\n");
-            
+
         }
     }
  
