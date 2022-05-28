@@ -44,24 +44,6 @@ item udt_front(udt *q){
 }
 
 int subtask(udt *q){
-    // for (int i = q->front_id + 1; i <= q->back_id; i++) {
-    //     if (q->arr[i].key < q->arr[i-1].key) {
-    //         while(i > q->front_id) {
-    //             printf("%d -> %d\n", q->arr[i].key, q->arr[i-1].key);
-    //             if (q->arr[i].key < q->arr[i-1].key) {
-    //                 item aa = q->arr[i];
-    //                 q->arr[i] = q->arr[i-1];
-    //                 q->arr[i-1] = aa;
-    //                 i--;
-    //             } else {
-    //                 break;
-    //             }
-    //         }
-    //         return 1;
-    //     }
-    // }
-    // return 0;
-
     for (int i = 1; i < udt_size(q); i++){
         if (udt_get_kth(q, i).key < udt_get_kth(q, i-1).key) {
             while(i >= 1) {

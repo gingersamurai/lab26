@@ -63,6 +63,7 @@ void print_menu(){
     printf("7 my task - sort\n");
     printf("8 exit\n");
     printf("-------------------------\n");
+    printf("your query: ");
 }
 
 int main(){
@@ -99,6 +100,7 @@ int main(){
             return 0;
         } else {
             printf("ERROR\n");
+
         }
     }
  
@@ -107,7 +109,7 @@ int main(){
 
 **queue.h**
 ```c
-#ifndef QUEUE_H
+##ifndef QUEUE_H
 #define QUEUE_H
 
 #include <stdbool.h>
@@ -150,6 +152,12 @@ int subtask(udt *q);
 
 // сортировка вставкой
 void task(udt *q);
+
+// взять k-й элемент в очереди
+item udt_get_kth(udt *q, int k);
+
+// поменять местами arr[k1] и arr[k2]
+void udt_swap_kth(udt *q, int k1, int k2);
 
 #endif
 ```
@@ -203,28 +211,35 @@ item udt_front(udt *q){
 }
 
 int subtask(udt *q){
-    for (int i = q->front_id + 1; i <= q->back_id; i++) {
-        if (q->arr[i].value < q->arr[i-1].value) {
-            while(i > q->front_id) {
-                printf("%d -> %d\n", q->arr[i].value, q->arr[i-1].value);
-                if (q->arr[i].value < q->arr[i-1].value) {
-                    item aa = q->arr[i];
-                    q->arr[i] = q->arr[i-1];
-                    q->arr[i-1] = aa;
+    for (int i = 1; i < udt_size(q); i++){
+        if (udt_get_kth(q, i).key < udt_get_kth(q, i-1).key) {
+            while(i >= 1) {
+                if (udt_get_kth(q, i).key < udt_get_kth(q, i-1).key){
+                    printf("%d -> %d\n", udt_get_kth(q, i).key, udt_get_kth(q, i-1).key);
+                    udt_swap_kth(q, i, i-1);
                     i--;
                 } else {
                     break;
                 }
             }
-            return 1;
         }
     }
-    return 0;
 }
 
 void task(udt *q){
     while(subtask(q) == 1);
 }
+
+item udt_get_kth(udt *q, int k){
+    return q->arr[q->front_id + k];
+}
+
+void udt_swap_kth(udt *q, int k1, int k2){
+    item buff = q->arr[q->front_id+k1];
+    q->arr[q->front_id+k1] = q->arr[q->front_id+k2];
+    q->arr[q->front_id+k2] = buff; 
+}
+
 ```
 
 
@@ -247,9 +262,8 @@ clean:
 
 ### пример работы
 ```
-gingersamurai@LY530:~/coding/lab/lab25-26$ make 
-gcc -c queue.c -o queue.o
-gcc queue.o main.o -o main
+gingeeersamurai@antix1:~/coding/lab/lab26
+$ make 
 ./main
 -------------------------
 1 check if is empty
@@ -261,8 +275,8 @@ gcc queue.o main.o -o main
 7 my task - sort
 8 exit
 -------------------------
-2
-enter key and value: 1 43
+your query: 1
+empty
 -------------------------
 1 check if is empty
 2 push back elem
@@ -273,8 +287,8 @@ enter key and value: 1 43
 7 my task - sort
 8 exit
 -------------------------
-2
-enter key and value: 4 12
+your query: 2
+enter key and value: 3 1 
 -------------------------
 1 check if is empty
 2 push back elem
@@ -285,8 +299,8 @@ enter key and value: 4 12
 7 my task - sort
 8 exit
 -------------------------
-4
-[ (1:43) (4:12)  ]
+your query: 2 
+enter key and value: 4 1
 -------------------------
 1 check if is empty
 2 push back elem
@@ -297,20 +311,9 @@ enter key and value: 4 12
 7 my task - sort
 8 exit
 -------------------------
-5
-2
--------------------------
-1 check if is empty
-2 push back elem
-3 pop front elem
-4 print queue
-5 queue size
-6 queue front
-7 my task - sort
-8 exit
--------------------------
+your query: 2 
+enter key and value: 2
 1
-not empty
 -------------------------
 1 check if is empty
 2 push back elem
@@ -321,8 +324,8 @@ not empty
 7 my task - sort
 8 exit
 -------------------------
-4
-[ (1:43) (4:12)  ]
+your query: 4
+[ (3:1) (4:1) (2:1)  ]
 -------------------------
 1 check if is empty
 2 push back elem
@@ -333,8 +336,31 @@ not empty
 7 my task - sort
 8 exit
 -------------------------
+your query: 3
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+your query: 4
+[ (4:1) (2:1)  ]
+-------------------------
+1 check if is empty
+2 push back elem
+3 pop front elem
+4 print queue
+5 queue size
+6 queue front
+7 my task - sort
+8 exit
+-------------------------
+your query: 5
 2
-enter key and value: 4 5467
 -------------------------
 1 check if is empty
 2 push back elem
@@ -345,8 +371,8 @@ enter key and value: 4 5467
 7 my task - sort
 8 exit
 -------------------------
-2
-enter key and value: 65 1
+your query: 6
+(4:1)
 -------------------------
 1 check if is empty
 2 push back elem
@@ -357,9 +383,8 @@ enter key and value: 65 1
 7 my task - sort
 8 exit
 -------------------------
-2
-enter key and value: 654
-9
+your query: 2
+enter key and value: 7 6 
 -------------------------
 1 check if is empty
 2 push back elem
@@ -370,8 +395,8 @@ enter key and value: 654
 7 my task - sort
 8 exit
 -------------------------
-4
-[ (1:43) (4:12) (4:5467) (65:1) (654:9)  ]
+your query: 2
+enter key and value:  9 8 
 -------------------------
 1 check if is empty
 2 push back elem
@@ -382,7 +407,8 @@ enter key and value: 654
 7 my task - sort
 8 exit
 -------------------------
-3
+your query: 4 
+[ (4:1) (2:1) (7:6) (9:8)  ]
 -------------------------
 1 check if is empty
 2 push back elem
@@ -393,8 +419,9 @@ enter key and value: 654
 7 my task - sort
 8 exit
 -------------------------
-4
-[ (4:12) (4:5467) (65:1) (654:9)  ]
+your query: 2
+enter key and value: 1
+1
 -------------------------
 1 check if is empty
 2 push back elem
@@ -405,7 +432,8 @@ enter key and value: 654
 7 my task - sort
 8 exit
 -------------------------
-3
+your query: 4
+[ (4:1) (2:1) (7:6) (9:8) (1:1)  ]
 -------------------------
 1 check if is empty
 2 push back elem
@@ -416,8 +444,12 @@ enter key and value: 654
 7 my task - sort
 8 exit
 -------------------------
-4
-[ (4:5467) (65:1) (654:9)  ]
+your query: 7
+2 -> 4
+1 -> 9
+1 -> 7
+1 -> 4
+1 -> 2
 -------------------------
 1 check if is empty
 2 push back elem
@@ -428,8 +460,8 @@ enter key and value: 654
 7 my task - sort
 8 exit
 -------------------------
-2
-enter key and value: 4 2
+your query: 4
+[ (1:1) (2:1) (4:1) (7:6) (9:8)  ]
 -------------------------
 1 check if is empty
 2 push back elem
@@ -440,9 +472,8 @@ enter key and value: 4 2
 7 my task - sort
 8 exit
 -------------------------
-2
-enter key and value: -1
-4
+your query: 2
+enter key and value: 8 3245
 -------------------------
 1 check if is empty
 2 push back elem
@@ -453,8 +484,8 @@ enter key and value: -1
 7 my task - sort
 8 exit
 -------------------------
-4
-[ (4:5467) (65:1) (654:9) (4:2) (-1:4)  ]
+your query: 4
+[ (1:1) (2:1) (4:1) (7:6) (9:8) (8:3245)  ]
 -------------------------
 1 check if is empty
 2 push back elem
@@ -465,16 +496,8 @@ enter key and value: -1
 7 my task - sort
 8 exit
 -------------------------
-7
-1 -> 5467
-9 -> 5467
-9 -> 1
-2 -> 5467
-2 -> 9
-2 -> 1
-4 -> 5467
-4 -> 9
-4 -> 2
+your query: 7
+8 -> 9
 -------------------------
 1 check if is empty
 2 push back elem
@@ -485,8 +508,8 @@ enter key and value: -1
 7 my task - sort
 8 exit
 -------------------------
-4
-[ (65:1) (4:2) (-1:4) (654:9) (4:5467)  ]
+your query: 4
+[ (1:1) (2:1) (4:1) (7:6) (8:3245) (9:8)  ]
 -------------------------
 1 check if is empty
 2 push back elem
@@ -497,31 +520,7 @@ enter key and value: -1
 7 my task - sort
 8 exit
 -------------------------
-2
-enter key and value: 6 8
--------------------------
-1 check if is empty
-2 push back elem
-3 pop front elem
-4 print queue
-5 queue size
-6 queue front
-7 my task - sort
-8 exit
--------------------------
-4
-[ (65:1) (4:2) (-1:4) (654:9) (4:5467) (6:8)  ]
--------------------------
-1 check if is empty
-2 push back elem
-3 pop front elem
-4 print queue
-5 queue size
-6 queue front
-7 my task - sort
-8 exit
--------------------------
-5
+your query: 5
 6
 -------------------------
 1 check if is empty
@@ -533,10 +532,8 @@ enter key and value: 6 8
 7 my task - sort
 8 exit
 -------------------------
-7
-8 -> 5467
-8 -> 9
-8 -> 4
+your query: 1
+not empty
 -------------------------
 1 check if is empty
 2 push back elem
@@ -547,19 +544,9 @@ enter key and value: 6 8
 7 my task - sort
 8 exit
 -------------------------
-4
-[ (65:1) (4:2) (-1:4) (6:8) (654:9) (4:5467)  ]
--------------------------
-1 check if is empty
-2 push back elem
-3 pop front elem
-4 print queue
-5 queue size
-6 queue front
-7 my task - sort
-8 exit
--------------------------
-
+your query: 8
+gingeeersamurai@antix1:~/coding/lab/lab26
+$ 
 
 ```
 
