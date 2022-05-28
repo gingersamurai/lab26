@@ -44,25 +44,49 @@ item udt_front(udt *q){
 }
 
 int subtask(udt *q){
-    for (int i = q->front_id + 1; i <= q->back_id; i++) {
-        if (q->arr[i].value < q->arr[i-1].value) {
-            while(i > q->front_id) {
-                printf("%d -> %d\n", q->arr[i].value, q->arr[i-1].value);
-                if (q->arr[i].value < q->arr[i-1].value) {
-                    item aa = q->arr[i];
-                    q->arr[i] = q->arr[i-1];
-                    q->arr[i-1] = aa;
+    // for (int i = q->front_id + 1; i <= q->back_id; i++) {
+    //     if (q->arr[i].key < q->arr[i-1].key) {
+    //         while(i > q->front_id) {
+    //             printf("%d -> %d\n", q->arr[i].key, q->arr[i-1].key);
+    //             if (q->arr[i].key < q->arr[i-1].key) {
+    //                 item aa = q->arr[i];
+    //                 q->arr[i] = q->arr[i-1];
+    //                 q->arr[i-1] = aa;
+    //                 i--;
+    //             } else {
+    //                 break;
+    //             }
+    //         }
+    //         return 1;
+    //     }
+    // }
+    // return 0;
+
+    for (int i = 1; i < udt_size(q); i++){
+        if (udt_get_kth(q, i).key < udt_get_kth(q, i-1).key) {
+            while(i >= 1) {
+                if (udt_get_kth(q, i).key < udt_get_kth(q, i-1).key){
+                    printf("%d -> %d\n", udt_get_kth(q, i).key, udt_get_kth(q, i-1).key);
+                    udt_swap_kth(q, i, i-1);
                     i--;
                 } else {
                     break;
                 }
             }
-            return 1;
         }
     }
-    return 0;
 }
 
 void task(udt *q){
     while(subtask(q) == 1);
+}
+
+item udt_get_kth(udt *q, int k){
+    return q->arr[q->front_id + k];
+}
+
+void udt_swap_kth(udt *q, int k1, int k2){
+    item buff = q->arr[q->front_id+k1];
+    q->arr[q->front_id+k1] = q->arr[q->front_id+k2];
+    q->arr[q->front_id+k2] = buff; 
 }

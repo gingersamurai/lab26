@@ -42,4 +42,10 @@ int subtask(udt *q);
 // сортировка вставкой
 void task(udt *q);
 
+// взять k-й элемент в очереди
+item udt_get_kth(udt *q, int k);
+
+// поменять местами arr[k1] и arr[k2]
+void udt_swap_kth(udt *q, int k1, int k2);
+
 #endif
